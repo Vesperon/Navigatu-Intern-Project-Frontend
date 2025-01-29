@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";
 import axios from "axios";
@@ -10,12 +10,8 @@ const Login = () => {
   const [csrfToken, setCsrfToken] = useState(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // Clear previous errors
-    
-
-    try {
+  useEffect(() => {
+    const fetchToken = async () => {
       try {
         const response = await axios.get("http://localhost:8000/csrf-token", {
           withCredentials: true,
@@ -27,6 +23,18 @@ const Login = () => {
         console.error("Error fetching token:", error);
         setError("Error fetching data. Please try again later.");
       }
+    }
+    fetchToken();
+      
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+    
+
+    try {
+   
 
       const response = await axios.post(
         "http://localhost:8000/api/auth/login",{
