@@ -48,6 +48,7 @@
   font-style: normal;
   font-variation-settings:
     "wdth" 100;
+    font-size: 30px;
 }
 
 .search-wrapper{
@@ -98,3 +99,95 @@ button{
 .table-wrapper{
   align-items: center;
 }
+
+/*NAVBAR*/
+
+.toggle{
+ border: none;
+ float: right;
+}
+
+.track{
+  float: right;
+}
+
+/*LOG IN PAGE*/
+
+.sign_in{
+  color: white;
+  border: 1px solid black;
+  max-width: 200px;
+  background-color: black;
+  margin-left: 70px;
+}
+button:hover {
+  background-color: black !important;
+  border: black !important;
+ 
+}
+
+
+.login-card {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.form-control {
+  background-color: white !important;
+  border: 1px solid black !important;
+  color: black !important;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: black;
+}
+
+
+/*LOGS*/
+
+
+
+.search-wrapper{
+  background-color: none;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid black;
+  height:35px;
+  padding: 0 15px;
+  box-shadow: 0px 0px 8px #ddd;
+  display: flex;
+  float: right;
+}
+
+
+
+@media (max-width: 10px) {
+  .search-wrapper {
+    display: none;
+  }
+
+}
+
+
+.table-wrapper {
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+
+}
+
+.table,thead{
+  border: 1px solid black;
+}
+
+@media (max-width: 768px) {
+  .table-wrapper table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
