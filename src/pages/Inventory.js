@@ -15,7 +15,8 @@ const Inventory = () => {
   const [addModal, setAddModal] = useState(false);
   const [borrowModal, setBorrowModal] = useState(false);
   const [item, setItem] = useState(null);
-  const [item_id, setItemID] =useState(null);
+  const [search, setSearch] = useState("");
+  const [item_id, setItemID] = useState(null);
   // useEffect(() => {
   //     // Step 1: Fetch the CSRF token
   //     axios.get("http://localhost:8000/csrf-token")
@@ -27,58 +28,53 @@ const Inventory = () => {
   //             console.error("Error fetching CSRF token:", error);
   //         });
   // }, []); // Empty array ensures this runs only once when the component mounts
- const handleBorrow = (props) =>{
-  setItem(props);
-  setBorrowModal(true);
-
- }
-
- const handleDelete = (props) => {
-  setLoading(true); // Start loading indicator
-  setItemID(props);
-  const fetchToken = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/csrf-token",{
-          withCredentials: true,
-      });
-      // Call the API after setting the token
-      deleteItem(response.data.csrf_token);
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      setError("Error fetching data. Please try again later.");
-      setLoading(false);
-    }
+  const handleBorrow = (props) => {
+    setItem(props);
+    setBorrowModal(true);
   };
-  
-  fetchToken();
-};
 
- const deleteItem = (csrfToken) => {
+  const handleDelete = (props) => {
+    setLoading(true); // Start loading indicator
+    setItemID(props);
+    const fetchToken = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/csrf-token", {
+          withCredentials: true,
+        });
+        // Call the API after setting the token
+        deleteItem(response.data.csrf_token);
+      } catch (error) {
+        console.error("Error fetching token:", error);
+        setError("Error fetching data. Please try again later.");
+        setLoading(false);
+      }
+    };
 
-  axios.delete(`http://localhost:8000/inventory/delete/${item_id}`, {
-    headers: {
-      'X-CSRF-Token': csrfToken, // Include the CSRF token in headers
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  })
-  .then((response) => {
-    console.log("Item added:", response.data);
-  })
-  .catch((error) => {
-    console.error("Error adding item:", error);
-    setError("Failed to add item");
-  })
-  .finally(() => {
-    setLoading(false); // Stop loading indicator
-  });
-};
+    fetchToken();
+  };
 
+  const deleteItem = (csrfToken) => {
+    axios
+      .delete(`http://localhost:8000/inventory/delete/${item_id}`, {
+        headers: {
+          "X-CSRF-Token": csrfToken, // Include the CSRF token in headers
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("Item added:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error adding item:", error);
+        setError("Failed to add item");
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading indicator
+      });
+  };
 
-  
   useEffect(() => {
-
-
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/inventory");
@@ -90,8 +86,8 @@ const Inventory = () => {
         setLoading(false); // Ensure loading stops in both success and error cases
       }
     };
+      fetchData();
 
-    fetchData();
   }); // Added csrfToken as a dependency to the useEffect
 
   return (
@@ -100,13 +96,23 @@ const Inventory = () => {
         <h1 className="title m-5">Inventory Dashboard</h1>
         <div className="search-wrapper m-5">
           <FaSearch />
-          <input placeholder="Search items..." />
+          <input
+            placeholder="Search items..."
+            type="text"
+            name="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
         <div className="button-wrapper mx-5">
           <button onClick={() => setAddModal(true)}>Add Item</button>
         </div>
         <AddItem show={addModal} onHide={() => setAddModal(false)} />
-        <BorrowItem item={item} show={borrowModal} onHide={() => setBorrowModal(false)} />
+        <BorrowItem
+          item={item}
+          show={borrowModal}
+          onHide={() => setBorrowModal(false)}
+        />
         <div className="table-wrapper m-5">
           <Table striped bordered hover>
             <thead>
@@ -121,25 +127,30 @@ const Inventory = () => {
             </thead>
             <tbody>
               {data && data.length > 0 ? (
-                data.map((item) => (
+                data.filter((item)=>{
+                  return search.toLowerCase() === ''
+                    ? item
+                    : item.item.toLowerCase().includes(search);
+                }).map((item) => (
                   <tr key={item.item_id}>
                     <td>{item.item_id}</td>
                     <td>{item.item}</td>
                     <td>{item.quantity}</td>
                     <td>{item.tbi_assigned}</td>
                     <td>{item.person}</td>
-                    <td><Button onClick={()=> handleBorrow(item)}>Borrow</Button><Button onClick={()=> handleDelete(item.item_id)}><MdDelete /></Button></td>
+                    <td>
+                      <Button onClick={() => handleBorrow(item)}>Borrow</Button>
+                      <Button onClick={() => handleDelete(item.item_id)}>
+                        <MdDelete />
+                      </Button>
+                    </td>
                   </tr>
-                  
                 ))
               ) : (
                 <tr>
                   <td colSpan="5">No data available</td>
                 </tr>
-              )
-              
-              }
-              
+              )}
             </tbody>
           </Table>
         </div>
