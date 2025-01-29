@@ -55,7 +55,7 @@ const Inventory = () => {
 
  const deleteItem = (csrfToken) => {
 
-  axios.delete("http://localhost:8000/inventory/delete",item_id, {
+  axios.delete(`http://localhost:8000/inventory/delete/${item_id}`, {
     headers: {
       'X-CSRF-Token': csrfToken, // Include the CSRF token in headers
       'Content-Type': 'application/json',
