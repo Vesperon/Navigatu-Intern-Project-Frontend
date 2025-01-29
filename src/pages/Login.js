@@ -57,14 +57,14 @@ const Login = () => {
 
   return (
     <Container
-      className="d-flex align-items-center justify-content-center"
+      className="d-flex align-items-center justify-content-center "
       style={{ minHeight: "100vh" }}
     >
-      <Card style={{ width: "100%", maxWidth: "400px" }}>
+      <Card style={{ width: "100%", maxWidth: "400px" }} className="login-card">
         <Card.Body>
           <Card.Title className="text-center mb-4">Login</Card.Title>
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Group className="mb-3 email " controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
@@ -88,7 +88,7 @@ const Login = () => {
 
             {error && <Alert variant="danger">{error}</Alert>}
 
-            <Button variant="primary" type="submit" className="w-100">
+            <Button type="submit" className="sign_in ">
               Sign In
             </Button>
           </Form>
