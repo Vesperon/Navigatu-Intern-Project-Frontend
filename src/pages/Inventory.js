@@ -63,11 +63,11 @@ const Inventory = () => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log("Item added:", response.data);
+        console.log("Item deleted:", response.data);
       })
       .catch((error) => {
-        console.error("Error adding item:", error);
-        setError("Failed to add item");
+        console.error("Error deleting item:", error);
+        setError("Failed to delete item");
       })
       .finally(() => {
         setLoading(false); // Stop loading indicator

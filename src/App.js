@@ -1,22 +1,20 @@
-import { Route, Routes } from 'react-router-dom';
-import Track from './pages/Track';
-import Inventory from './pages/Inventory';
-import Navigation from './components/Navigation';
-import axios from "axios";
-import { useEffect, useState } from 'react';
-
-
-
-
+import { Route, Routes, useLocation } from "react-router-dom";
+import Track from "./pages/Track";
+import Inventory from "./pages/Inventory";
+import Logs from "./pages/Logs";
+import Login from "./pages/Login";
+import Navigation from "./components/Navigation";
 
 function App() {
-
+  const location = useLocation();
   return (
     <>
-      <Navigation />
+      {location.pathname !== "/" && <Navigation />}
       <Routes>
-        <Route path='/' element={<Track />} />
-        <Route path='/inventory' element={<Inventory />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/track" element={<Track />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/logs" element={<Logs />} />
       </Routes>
     </>
   );
