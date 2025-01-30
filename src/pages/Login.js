@@ -52,7 +52,7 @@ const Login = () => {
       );
 
       // Store the token in local storage or session storage
-      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("token", response.data.token);
 
       // Redirect user to /track
       navigate("/track");

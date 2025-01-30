@@ -77,14 +77,15 @@ input:focus{
 
 .button-wrapper{
   background-color: black;
-  width: 95%;
+  width: 100%;
   border-radius: 10px;
   height: 2.5rem;
   padding: 0 15px;
   box-shadow: 0px 0px 8px #ddd;
   display: flex;
   align-items: center;
-  margin-top: -30px;}
+  
+}
 
 button{
   background-color: transparent;
@@ -100,6 +101,12 @@ button{
   align-items: center;
 }
 
+.borrow{
+  display: flex;
+  width: 50%;
+  align-self: center;
+  text-align: center;
+}
 /*NAVBAR*/
 
 .toggle{

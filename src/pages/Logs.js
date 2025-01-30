@@ -35,6 +35,22 @@ const Logs = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
+  const formatDateTime = (timestamp) => {
+    if (!timestamp) return "";
+    const [date, time] = timestamp.split("T");
+    let [hours, minutes, seconds] = time.split(".")[0].split(":");
+    let period = "AM";
+    hours = parseInt(hours, 10);
+    if (hours >= 12) {
+      period = "PM";
+      if (hours > 12) hours -= 12;
+    }
+    if (hours === 0) hours = 12;
+    const formattedTime = `${hours}:${minutes}:${seconds} ${period}`;
+    return { date, time: formattedTime };
+  };
+
   return (
     <>
       <div className="container inventory">
@@ -61,38 +77,45 @@ const Logs = () => {
         <div className="container table-wrapper mt-3">
           <Table className="table" striped bordered hover>
             <thead> 
-              <tr>
+            <tr>
                 <th>Date</th>
+                <th>Time</th>
                 <th>Reference ID</th>
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Office</th>
                 <th>Person</th>
                 <th>Purpose</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {data && data.length > 0 ? (
+            {data && data.length > 0 ? (
                 data
                   .filter((item) => {
                     return search.toLowerCase() === ""
                       ? item
                       : item.item.toLowerCase().includes(search);
                   })
-                  .map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.created_at}</td>
-                      <td>{item.reference_id}</td>
-                      <td>{item.item}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.office}</td>
-                      <td>{item.person}</td>
-                      <td>{item.purpose}</td>
-                    </tr>
-                  ))
+                  .map((item) => {
+                    const { date, time } = formatDateTime(item.created_at);
+                    return (
+                      <tr key={item.id}>
+                        <td>{date}</td>
+                        <td>{time}</td>
+                        <td>{item.reference_id}</td>
+                        <td>{item.item}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.office}</td>
+                        <td>{item.person}</td>
+                        <td>{item.purpose}</td>
+                        <td>{item.status}</td>
+                      </tr>
+                    );
+                  })
               ) : (
                 <tr>
-                  <td colSpan="7">No data available</td>
+                  <td colSpan="8">No data available</td>
                 </tr>
               )}
             </tbody>

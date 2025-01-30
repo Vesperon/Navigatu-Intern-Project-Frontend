@@ -20,7 +20,7 @@ const Track = () => {
   const [office, setOffice] = useState("");
   const [person, setPerson] = useState("");
   const [purpose, setPurpose] = useState("");
-
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,12 +73,14 @@ const Track = () => {
         person,
         purpose
     }
+    
 
     axios
     .post("http://localhost:8000/track/return", returnedData,{
       headers: {
         "X-CSRF-Token": csrfToken, // Include the CSRF token in headers
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem('token')}`
       },
       withCredentials: true,
     })
@@ -98,6 +100,7 @@ const Track = () => {
         headers: {
           "X-CSRF-Token": csrfToken, // Include the CSRF token in headers
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
         },
         withCredentials: true,
       })
@@ -111,47 +114,63 @@ const Track = () => {
       .finally(() => {
         setLoading(false); // Stop loading indicator
       });
-
-
   }
+
+  const formatDateTime = (timestamp) => {
+    if (!timestamp) return "";
+    const [date, time] = timestamp.split("T");
+    let [hours, minutes, seconds] = time.split(".")[0].split(":");
+    let period = "AM";
+    hours = parseInt(hours, 10);
+    if (hours >= 12) {
+      period = "PM";
+      if (hours > 12) hours -= 12;
+    }
+    if (hours === 0) hours = 12;
+    const formattedTime = `${hours}:${minutes}:${seconds} ${period}`;
+    return { date, time: formattedTime };
+  };
 
   return (
     <>
-      <div className="inventory">
+      <div className="container inventory">
         <h1 className="title m-5">Tracking Dashboard</h1>
         <div className="table-wrapper m-5">
           <Table striped bordered hover>
             <thead>
-              <tr>
-                <th>Date borrowed</th>
+            <tr>
+                <th>Date Borrowed</th>
+                <th>Time Borrowed</th>
                 <th>Item</th>
                 <th>Quantity</th>
-                <th>TBI Assigned</th>
-                <th>Person</th>
+                <th>TBI</th>
+                <th>Borrower</th>
                 <th>Purpose</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {data && data.length > 0 ? (
-                data.map((item) => (
-                  <tr key={item.borrow_id}>
-                    <td>{item.created_at}</td>
-                    <td>{item.item}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.office}</td>
-                    <td>{item.person}</td>
-                    <td>{item.purpose}</td>
-                    <td>
-                      <Button onClick={() => handleReturn(item)}>
-                        Returned
-                      </Button>
-                    </td>
-                  </tr>
-                ))
+            {data && data.length > 0 ? (
+                data.map((item) => {
+                  const { date, time } = formatDateTime(item.created_at);
+                  return (
+                    <tr key={item.borrow_id}>
+                      <td>{date}</td>
+                      <td>{time}</td>
+                      <td>{item.item}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.office}</td>
+                      <td>{item.person}</td>
+                      <td>{item.purpose}</td>
+                      <td>
+                        <Button onClick={() => handleReturn(item)}>Return</Button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan="5">No data available</td>
+                  <td colSpan="8">No data available</td>
                 </tr>
               )}
             </tbody>

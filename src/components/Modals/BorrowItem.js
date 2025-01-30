@@ -58,6 +58,7 @@ const BorrowItem = (props) => {
         headers: {
           "X-CSRF-Token": csrfToken,
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
         },
         withCredentials: true,
       })

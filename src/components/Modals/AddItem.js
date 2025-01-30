@@ -51,6 +51,7 @@ const AddItem = (props) => {
       headers: {
         'X-CSRF-Token': csrfToken, // Include the CSRF token in headers
         'Content-Type': 'application/json',
+        "Authorization": `Bearer ${localStorage.getItem('token')}`
       },
       withCredentials: true,
     })

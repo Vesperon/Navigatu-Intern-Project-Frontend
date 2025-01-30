@@ -59,6 +59,7 @@ const Inventory = () => {
         headers: {
           "X-CSRF-Token": csrfToken, // Include the CSRF token in headers
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         withCredentials: true,
       })
@@ -86,23 +87,28 @@ const Inventory = () => {
         setLoading(false); // Ensure loading stops in both success and error cases
       }
     };
-      fetchData();
-
+    fetchData();
   }); // Added csrfToken as a dependency to the useEffect
 
   return (
     <>
-      <div className="inventory">
-        <h1 className="title m-5">Inventory Dashboard</h1>
-        <div className="search-wrapper m-5">
-          <FaSearch />
-          <input
-            placeholder="Search items..."
-            type="text"
-            name="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="container inventory">
+        <div className="row">
+          <div className="col">
+            <h1 className="title mt-5 mx-5 mb-3">Inventory Dashboard</h1>
+          </div>
+          <div className="col m5-3">
+            <div className="search-wrapper mt-5 mx-3 mb-3">
+              <FaSearch />
+              <input
+                placeholder="Search items..."
+                type="text"
+                name="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
         <div className="button-wrapper mx-5">
           <button onClick={() => setAddModal(true)}>Add Item</button>
@@ -113,8 +119,8 @@ const Inventory = () => {
           show={borrowModal}
           onHide={() => setBorrowModal(false)}
         />
-        <div className="table-wrapper m-5">
-          <Table striped bordered hover>
+        <div className="container table-wrapper m-5">
+          <Table className="table" striped bordered hover>
             <thead>
               <tr>
                 <th>ID</th>
@@ -127,28 +133,32 @@ const Inventory = () => {
             </thead>
             <tbody>
               {data && data.length > 0 ? (
-                data.filter((item)=>{
-                  return search.toLowerCase() === ''
-                    ? item
-                    : item.item.toLowerCase().includes(search);
-                }).map((item) => (
-                  <tr key={item.item_id}>
-                    <td>{item.item_id}</td>
-                    <td>{item.item}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.tbi_assigned}</td>
-                    <td>{item.person}</td>
-                    <td>
-                      <Button onClick={() => handleBorrow(item)}>Borrow</Button>
-                      <Button onClick={() => handleDelete(item.item_id)}>
-                        <MdDelete />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
+                data
+                  .filter((item) => {
+                    return search.toLowerCase() === ""
+                      ? item
+                      : item.item.toLowerCase().includes(search);
+                  })
+                  .map((item) => (
+                    <tr key={item.item_id}>
+                      <td>{item.item_id}</td>
+                      <td>{item.item}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.tbi_assigned}</td>
+                      <td>{item.person}</td>
+                      <td>
+                        <Button className="borrow" onClick={() => handleBorrow(item)}>
+                          Borrow
+                        </Button>
+                        <Button className="borrow" onClick={() => handleDelete(item.item_id)}>
+                          <MdDelete />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
-                  <td colSpan="5">No data available</td>
+                  <td colSpan="8">No data available</td>
                 </tr>
               )}
             </tbody>
