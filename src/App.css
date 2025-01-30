@@ -87,7 +87,7 @@ input:focus{
   
 }
 
-button{
+.button-add{
   background-color: transparent;
   color: white;
   border: none;
@@ -103,9 +103,23 @@ button{
 
 .borrow{
   display: flex;
-  width: 50%;
-  align-self: center;
-  text-align: center;
+  width: 10px;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.logout-btn {
+  margin-right: -1455px; /* Aligns button to the right */
+
+}
+
+
+.inventory-search{
+  margin-right: -64px;
 }
 /*NAVBAR*/
 

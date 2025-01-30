@@ -97,7 +97,7 @@ const Inventory = () => {
           <div className="col">
             <h1 className="title mt-5 mx-5 mb-3">Inventory Dashboard</h1>
           </div>
-          <div className="col m5-3">
+          <div className="col inventory-search">
             <div className="search-wrapper mt-5 mx-3 mb-3">
               <FaSearch />
               <input
@@ -111,7 +111,7 @@ const Inventory = () => {
           </div>
         </div>
         <div className="button-wrapper mx-5">
-          <button onClick={() => setAddModal(true)}>Add Item</button>
+          <button className="button-add" onClick={() => setAddModal(true)}>Add Item</button>
         </div>
         <AddItem show={addModal} onHide={() => setAddModal(false)} />
         <BorrowItem
@@ -128,7 +128,7 @@ const Inventory = () => {
                 <th>Quantity</th>
                 <th>TBI Assigned</th>
                 <th>Person</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -147,12 +147,15 @@ const Inventory = () => {
                       <td>{item.tbi_assigned}</td>
                       <td>{item.person}</td>
                       <td>
-                        <Button className="borrow" onClick={() => handleBorrow(item)}>
+                        <div className="borrow">
+                          <Button className="mx-3" variant="dark" onClick={() => handleBorrow(item)}>
                           Borrow
                         </Button>
-                        <Button className="borrow" onClick={() => handleDelete(item.item_id)}>
+                        <Button className="mx-3" variant="danger" onClick={() => handleDelete(item.item_id)}>
                           <MdDelete />
                         </Button>
+                        </div>
+                        
                       </td>
                     </tr>
                   ))
