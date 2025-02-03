@@ -8,9 +8,10 @@ import { Button } from "react-bootstrap";
 
 
 const Navigation = () => {
-  // const logout = () => {
-    
-  // }
+  const logout = () => {
+    localStorage.removeItem('token');
+    window.location.href = "/";
+  }
 
   return (
     <>
@@ -40,7 +41,7 @@ const Navigation = () => {
                     <Nav.Link href="/logs">Logs</Nav.Link>
                     
                   </Nav>
-                  <Button  variant="danger" className="logout-btn">Logout</Button>
+                  <Button onClick={() => logout()} variant="danger" className="logout-btn">Logout</Button>
                   
                 </Navbar.Collapse>
                 

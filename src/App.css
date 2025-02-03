@@ -139,13 +139,13 @@ input:focus{
   border: 1px solid black;
   max-width: 200px;
   background-color: black;
-  margin-left: 70px;
+  margin-left: 40%;
 }
-button:hover {
+/* button:hover {
   background-color: black !important;
   border: black !important;
  
-}
+} */
 
 
 .login-card {
