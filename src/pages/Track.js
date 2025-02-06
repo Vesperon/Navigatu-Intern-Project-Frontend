@@ -158,6 +158,7 @@ const Track = () => {
                     <tr key={item.borrow_id}>
                       <td>{date}</td>
                       <td>{time}</td>
+                      <td>{item.expected_return}</td>
                       <td>{item.item}</td>
                       <td>{item.quantity}</td>
                       <td>{item.office}</td>

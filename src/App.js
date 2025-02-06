@@ -13,11 +13,11 @@ function App() {
       {location.pathname !== "/" && <Navigation />}
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route element={<PrivateRoute />}>
+        {/* <Route element={<PrivateRoute />}> */}
           <Route path="/track" element={<Track />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/logs" element={<Logs />} />
-        </Route>
+        {/* </Route> */}
       </Routes>
     </>
   );

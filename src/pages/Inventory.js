@@ -169,13 +169,19 @@ const Inventory = () => {
                       <td>{item.person}</td>
                       <td>
                         <div className="borrow">
-                          <Button
-                            className="mx-3"
-                            variant="dark"
-                            onClick={() => handleBorrow(item)}
-                          >
-                            Borrow
-                          </Button>
+                          {item.category === "Consumable" ? (
+                            <Button className=" mx-3" variant="dark">
+                              Consume
+                            </Button>
+                          ) : (
+                            <Button
+                              className=" mx-3"
+                              variant="dark"
+                              onClick={() => handleBorrow(item)}
+                            >
+                              Borrow
+                            </Button>
+                          )}
                           <Button
                             className="mx-3"
                             variant="danger"
