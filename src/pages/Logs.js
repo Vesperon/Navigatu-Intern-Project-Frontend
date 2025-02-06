@@ -54,13 +54,9 @@ const Logs = () => {
   return (
     <>
       <div className="container inventory">
-        <div className="row">
-          <div className="col">
-            <h1 className="title mt-5 mx-5 mb-3">Logs Dashboard</h1>
-          </div>
-          <div className="col">
+       
             
-              <div className="search-wrapper mt-5 mx-3 mb-3">
+              <div className="search-logs mt-5 mx-3 mb-3">
                 <FaSearch />
                 <input
                   placeholder="Search items..."
@@ -69,9 +65,7 @@ const Logs = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-              </div>
-            
-          </div>
+             
         </div>
         
         <div className="container table-wrapper mt-3">

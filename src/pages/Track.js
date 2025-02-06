@@ -134,8 +134,8 @@ const Track = () => {
   return (
     <>
       <div className="container inventory">
-        <h1 className="title m-5">Tracking Dashboard</h1>
-        <div className="table-wrapper m-5">
+       
+        <div className="table-wrapper mt-5 ">
           <Table striped bordered hover>
             <thead>
             <tr>

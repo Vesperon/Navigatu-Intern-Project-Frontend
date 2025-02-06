@@ -95,14 +95,9 @@ const Inventory = () => {
   return (
     <>
       <div className="container inventory">
-        <div className="row">
-          <div className="col button-wrapper mx-5 mt-5 mb-3">
-            <button className="button-add" onClick={() => setAddModal(true)}>
-              Add Item
-            </button>
-          </div>
-          <div className="col inventory-search">
-            <div className="search-wrapper mt-5 mx-3 mb-3">
+        <div className="row container mt-5  mb-3 ">
+          <div className="col mb-2 inventory-search">
+            <div className="search-wrapper ">
               <FaSearch />
               <input
                 placeholder="Search items..."
@@ -111,19 +106,45 @@ const Inventory = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <label for="filter">
-                <FaFilter></FaFilter>{" "}
-              </label>
-              <select
-                name="filter"
-                id="filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
+            </div>
+          </div>
+
+          <div className="col-auto mb-2 ">
+            <button
+              type="button"
+              class="btn btn-dark  button-add onClick={() => setAddModal(true)}>"
+            >
+              Add item
+            </button>
+          </div>
+
+          <div className="col-auto drop-wrapper mb-2">
+            <div class="dropdown-center">
+              <button
+                class="btn btn-dark dropdown-toggle FaFilter"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                <option value="All">All</option>
-                <option value="Consumable">Consumable</option>
-                <option value="Non-Consumable">Non-consumable</option>
-              </select>
+                dropdown
+              </button>
+              <ul class="dropdown-menu mt-2">
+                <li>
+                  <a class="dropdown-item" href="#">
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    Consumable
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    Non-Consumable
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -135,7 +156,7 @@ const Inventory = () => {
           onHide={() => setBorrowModal(false)}
         />
 
-        <div className="container table-wrapper m-5">
+        <div className="container table-wrapper mt-3">
           <Table className="table" striped bordered hover>
             <thead>
               <tr>
