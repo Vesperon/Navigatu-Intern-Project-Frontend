@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AddItem from "../components/Modals/AddItem";
 import BorrowItem from "../components/Modals/BorrowItem";
+import { FaFilter } from "react-icons/fa";
 
 const Inventory = () => {
   const [data, setData] = useState(null);
@@ -17,6 +18,7 @@ const Inventory = () => {
   const [item, setItem] = useState(null);
   const [search, setSearch] = useState("");
   const [item_id, setItemID] = useState(null);
+  const [filter, setFilter] = useState("All");
   // useEffect(() => {
   //     // Step 1: Fetch the CSRF token
   //     axios.get("http://localhost:8000/csrf-token")
@@ -94,8 +96,10 @@ const Inventory = () => {
     <>
       <div className="container inventory">
         <div className="row">
-          <div className="col">
-            <h1 className="title mt-5 mx-5 mb-3">Inventory Dashboard</h1>
+          <div className="col button-wrapper mx-5 mt-5 mb-3">
+            <button className="button-add" onClick={() => setAddModal(true)}>
+              Add Item
+            </button>
           </div>
           <div className="col inventory-search">
             <div className="search-wrapper mt-5 mx-3 mb-3">
@@ -107,24 +111,37 @@ const Inventory = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <label for="filter">
+                <FaFilter></FaFilter>{" "}
+              </label>
+              <select
+                name="filter"
+                id="filter"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Consumable">Consumable</option>
+                <option value="Non-Consumable">Non-consumable</option>
+              </select>
             </div>
           </div>
         </div>
-        <div className="button-wrapper mx-5">
-          <button className="button-add" onClick={() => setAddModal(true)}>Add Item</button>
-        </div>
+
         <AddItem show={addModal} onHide={() => setAddModal(false)} />
         <BorrowItem
           item={item}
           show={borrowModal}
           onHide={() => setBorrowModal(false)}
         />
+
         <div className="container table-wrapper m-5">
           <Table className="table" striped bordered hover>
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Item</th>
+                <th>Category</th>
                 <th>Quantity</th>
                 <th>TBI Assigned</th>
                 <th>Person</th>
@@ -135,27 +152,38 @@ const Inventory = () => {
               {data && data.length > 0 ? (
                 data
                   .filter((item) => {
-                    return search.toLowerCase() === ""
-                      ? item
-                      : item.item.toLowerCase().includes(search);
+                    const matchesSearch =
+                      search.toLowerCase() === "" ||
+                      item.item.toLowerCase().includes(search);
+                    const matchesFilter =
+                      filter === "All" || item.category === filter;
+                    return matchesSearch && matchesFilter;
                   })
                   .map((item) => (
                     <tr key={item.item_id}>
                       <td>{item.item_id}</td>
                       <td>{item.item}</td>
+                      <td>{item.category}</td>
                       <td>{item.quantity}</td>
                       <td>{item.tbi_assigned}</td>
                       <td>{item.person}</td>
                       <td>
                         <div className="borrow">
-                          <Button className="mx-3" variant="dark" onClick={() => handleBorrow(item)}>
-                          Borrow
-                        </Button>
-                        <Button className="mx-3" variant="danger" onClick={() => handleDelete(item.item_id)}>
-                          <MdDelete />
-                        </Button>
+                          <Button
+                            className="mx-3"
+                            variant="dark"
+                            onClick={() => handleBorrow(item)}
+                          >
+                            Borrow
+                          </Button>
+                          <Button
+                            className="mx-3"
+                            variant="danger"
+                            onClick={() => handleDelete(item.item_id)}
+                          >
+                            <MdDelete />
+                          </Button>
                         </div>
-                        
                       </td>
                     </tr>
                   ))

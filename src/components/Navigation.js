@@ -4,12 +4,20 @@ import Navbar from "react-bootstrap/Navbar";
 import Navigatu from "../assets/navigatu.jpg";
 import Tara from "../assets/tara.jpg";
 import { Button } from "react-bootstrap";
+import { useState } from "react";
+
 
 
 
 const Navigation = () => {
+
+  const pageHandler = (props) => {
+    localStorage.setItem("currentPage", props);
+  }
+
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('currentPage');
     window.location.href = "/";
   }
 
@@ -29,6 +37,9 @@ const Navigation = () => {
                   />
                 </Navbar.Brand>
               </div>
+              {/* <div className="col">
+                
+              </div> */}
               <div className="col track">
                 <Navbar.Toggle
                   aria-controls="basic-navbar-nav"
@@ -36,9 +47,13 @@ const Navigation = () => {
                 />
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto ">
-                    <Nav.Link href="/track">Tracking</Nav.Link>
-                    <Nav.Link href="/inventory">Inventory</Nav.Link>
-                    <Nav.Link href="/logs">Logs</Nav.Link>
+          
+                    {localStorage.getItem("currentPage") === "Tracking" && <Nav.Link >Tracking Dashboard</Nav.Link>}
+                    {localStorage.getItem("currentPage") === "Inventory" && <Nav.Link >Inventory Dashboard</Nav.Link>}
+                    {localStorage.getItem("currentPage") === "Logs" && <Nav.Link >Logs Dashboard</Nav.Link>}
+                    <Nav.Link href="/track" onClick={() => pageHandler("Tracking")}>Tracking</Nav.Link>
+                    <Nav.Link href="/inventory" onClick={() => pageHandler("Inventory")}>Inventory</Nav.Link>
+                    <Nav.Link href="/logs" onClick={() => pageHandler("Logs")}>Logs</Nav.Link>
                     
                   </Nav>
                   <Button onClick={() => logout()} variant="danger" className="logout-btn">Logout</Button>

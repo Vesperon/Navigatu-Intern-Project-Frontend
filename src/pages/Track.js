@@ -141,6 +141,7 @@ const Track = () => {
             <tr>
                 <th>Date Borrowed</th>
                 <th>Time Borrowed</th>
+                <th>Expected Return</th>
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>TBI</th>

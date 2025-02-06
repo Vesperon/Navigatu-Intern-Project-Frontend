@@ -2,72 +2,70 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
-import {  useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 const AddItem = (props) => {
   const [item, setItem] = useState("");
-  const [quantity, setQuantity] = useState();
+  const [category, setCategory] = useState("");
+  const [quantity, setQuantity] = useState(0);
   const [tbi_assigned, setTbi_assigned] = useState("");
   const [person, setPerson] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
-    
-
-   
-
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true); // Start loading indicator
-    
+
     const fetchToken = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/csrf-token",{
-            withCredentials: true,
+        const response = await axios.get("http://localhost:8000/csrf-token", {
+          withCredentials: true,
         });
         // Call the API after setting the token
+        
         submitForm(response.data.csrf_token);
+        
       } catch (error) {
         console.error("Error fetching token:", error);
         setError("Error fetching data. Please try again later.");
         setLoading(false);
       }
     };
-    
+
     fetchToken();
   };
-  
+
   const submitForm = (csrfToken) => {
     const formData = {
       item,
+      category,
       quantity,
       tbi_assigned,
       person,
     };
-  
-    axios.post("http://localhost:8000/inventory/add", formData, {
-      headers: {
-        'X-CSRF-Token': csrfToken, // Include the CSRF token in headers
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${localStorage.getItem('token')}`
-      },
-      withCredentials: true,
-    })
-    .then((response) => {
-      console.log("Item added:", response.data);
-      props.onHide(); // Close modal after success
-    })
-    .catch((error) => {
-      console.error("Error adding item:", error);
-      setError("Failed to add item");
-    })
-    .finally(() => {
-      setLoading(false); // Stop loading indicator
-    });
+    console.log(formData);
+    axios
+      .post("http://localhost:8000/inventory/add", formData, {
+        headers: {
+          "X-CSRF-Token": csrfToken, // Include the CSRF token in headers
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("Item added:", response.data);
+        props.onHide(); // Close modal after success
+      })
+      .catch((error) => {
+        console.error("Error adding item:", error);
+        setError("Failed to add item");
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading indicator
+      });
   };
-  
 
   return (
     <Modal
@@ -95,6 +93,22 @@ const AddItem = (props) => {
             />
           </FloatingLabel>
           <FloatingLabel
+            controlId="floatingSelect"
+            label="Category"
+            className="mb-3 ml-1 "
+          >
+            <Form.Select
+              type="text"
+              name="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="" disabled>=== Select Category ===</option>
+              <option value="Consumable">Consumable</option>
+              <option value="Non-Consumable">Non-Consumable</option>
+            </Form.Select>
+          </FloatingLabel>
+          <FloatingLabel
             controlId="floatingInput"
             label="Quantity"
             className="mb-3"
@@ -108,17 +122,20 @@ const AddItem = (props) => {
             />
           </FloatingLabel>
           <FloatingLabel
-            controlId="floatingInput"
-            label="TBI Assigned"
-            className="mb-3"
+            controlId="floatingSelect"
+            label="TBI"
+            className="mb-3 ml-1 "
           >
-            <Form.Control
+            <Form.Select
               type="text"
-              placeholder="TBI Assigned"
               name="tbi_assigned"
               value={tbi_assigned}
               onChange={(e) => setTbi_assigned(e.target.value)}
-            />
+            >
+              <option value="" disabled>=== Select TBI ===</option>
+              <option value="Navigatu">Navigatu</option>
+              <option value="TARA">TARA</option>
+            </Form.Select>
           </FloatingLabel>
           <FloatingLabel
             controlId="floatingInput"

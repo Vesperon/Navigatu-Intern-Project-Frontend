@@ -19,7 +19,7 @@ const Login = () => {
         });
         // Call the API after setting the token
         setCsrfToken(response.data.csrf_token);
-        console.log(csrfToken);
+        // console.log(csrfToken);
       } catch (error) {
         console.error("Error fetching token:", error);
         setError("Error fetching data. Please try again later.");

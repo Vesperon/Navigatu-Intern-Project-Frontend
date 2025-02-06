@@ -9,7 +9,9 @@ const BorrowItem = (props) => {
   const data = props.item || {}; // Ensure data is an object, avoiding null/undefined errors
 
   const [item, setItem] = useState(data.item || "");
+  const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [expected_return, setExpected_return] = useState(null);
   const [item_id, setItem_id] = useState(data.item_id || "");
   const [office, setOffice] = useState("");
   const [person, setPerson] = useState("");
@@ -19,6 +21,7 @@ const BorrowItem = (props) => {
 
   // Update state when props.item changes (if modal is reopened)
   useEffect(() => {
+    setCategory(data.category || "");
     setItem(data.item || "");
     setItem_id(data.item_id || "");
   }, [data]);
@@ -47,18 +50,22 @@ const BorrowItem = (props) => {
     const formData = {
       item_id,
       item,
+      category,
+      expected_return,
       quantity,
       office,
       person,
       purpose,
     };
 
+    console.log(formData);
+
     axios
       .post("http://localhost:8000/track/borrow", formData, {
         headers: {
           "X-CSRF-Token": csrfToken,
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         withCredentials: true,
       })
@@ -77,16 +84,60 @@ const BorrowItem = (props) => {
 
   return (
     <>
-      <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">Borrow item</Modal.Title>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Borrow item
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <FloatingLabel controlId="floatingItem" label="Item" className="mb-3">
-              <Form.Control type="text" placeholder="Item" value={item} disabled />
+            <FloatingLabel
+              controlId="floatingItem"
+              label="Item"
+              className="mb-3"
+            >
+              <Form.Control
+                type="text"
+                placeholder="Item"
+                value={item}
+                disabled
+              />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingQuantity" label="Quantity" className="mb-3">
+            <FloatingLabel
+              controlId="floatingItem"
+              label="Category"
+              className="mb-3"
+            >
+              <Form.Control
+                type="text"
+                placeholder="Category"
+                value={category}
+                disabled
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingItem"
+              label="Expected Return"
+              className="mb-3"
+            >
+              <Form.Control
+                type="date"
+                placeholder="Expected Return"
+                value={expected_return}
+                onChange={(e) => setExpected_return(e.target.value)}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingQuantity"
+              label="Quantity"
+              className="mb-3"
+            >
               <Form.Control
                 type="number"
                 placeholder="Quantity"
@@ -94,7 +145,11 @@ const BorrowItem = (props) => {
                 onChange={(e) => setQuantity(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingOffice" label="Office" className="mb-3">
+            <FloatingLabel
+              controlId="floatingOffice"
+              label="Office"
+              className="mb-3"
+            >
               <Form.Control
                 type="text"
                 placeholder="Office"
@@ -102,7 +157,11 @@ const BorrowItem = (props) => {
                 onChange={(e) => setOffice(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingPerson" label="Person" className="mb-3">
+            <FloatingLabel
+              controlId="floatingPerson"
+              label="Person"
+              className="mb-3"
+            >
               <Form.Control
                 type="text"
                 placeholder="Person"
@@ -110,7 +169,11 @@ const BorrowItem = (props) => {
                 onChange={(e) => setPerson(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingPurpose" label="Purpose" className="mb-3">
+            <FloatingLabel
+              controlId="floatingPurpose"
+              label="Purpose"
+              className="mb-3"
+            >
               <Form.Control
                 type="text"
                 placeholder="Purpose"
