@@ -5,8 +5,9 @@ import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-const BorrowItem = (props) => {
-  const data = props.item || {}; // Ensure data is an object, avoiding null/undefined errors
+const ConsumeItem = (props) => {
+    const data = props.item || {}; // Ensure data is an object, avoiding null/undefined errors
+
   const [item, setItem] = useState(data.item || "");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -60,7 +61,7 @@ const BorrowItem = (props) => {
     console.log(formData);
 
     axios
-      .post("http://localhost:8000/track/borrow", formData, {
+      .post("http://localhost:8000/inventory/consume", formData, {
         headers: {
           "X-CSRF-Token": csrfToken,
           "Content-Type": "application/json",
@@ -80,7 +81,6 @@ const BorrowItem = (props) => {
         setLoading(false);
       });
   };
-
   return (
     <>
       <Modal
@@ -92,7 +92,7 @@ const BorrowItem = (props) => {
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Borrow item
+              Consume item
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -120,18 +120,7 @@ const BorrowItem = (props) => {
                 disabled
               />
             </FloatingLabel>
-            <FloatingLabel
-              controlId="floatingItem"
-              label="Expected Return"
-              className="mb-3"
-            >
-              <Form.Control
-                type="date"
-                placeholder="Expected Return"
-                value={expected_return}
-                onChange={(e) => setExpected_return(e.target.value)}
-              />
-            </FloatingLabel>
+            
             <FloatingLabel
               controlId="floatingQuantity"
               label="Quantity"
@@ -144,18 +133,7 @@ const BorrowItem = (props) => {
                 onChange={(e) => setQuantity(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel
-              controlId="floatingOffice"
-              label="Office"
-              className="mb-3"
-            >
-              <Form.Control
-                type="text"
-                placeholder="Office"
-                value={office}
-                onChange={(e) => setOffice(e.target.value)}
-              />
-            </FloatingLabel>
+
             <FloatingLabel
               controlId="floatingPerson"
               label="Person"
@@ -169,7 +147,7 @@ const BorrowItem = (props) => {
               />
             </FloatingLabel>
             <FloatingLabel
-              controlId="floatingPurpose"
+              controlId="floatingPerson"
               label="Purpose"
               className="mb-3"
             >
@@ -180,6 +158,7 @@ const BorrowItem = (props) => {
                 onChange={(e) => setPurpose(e.target.value)}
               />
             </FloatingLabel>
+
             <Form.Control type="hidden" value={item_id} />
             {error && <p className="text-danger">{error}</p>}
           </Modal.Body>
@@ -195,4 +174,4 @@ const BorrowItem = (props) => {
   );
 };
 
-export default BorrowItem;
+export default ConsumeItem;

@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AddItem from "../components/Modals/AddItem";
 import BorrowItem from "../components/Modals/BorrowItem";
+import ConsumeItem from "../components/Modals/ConsumeItem";
+import EditItem from "../components/Modals/EditItem";
 import { FaFilter } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
+import { BiHide } from "react-icons/bi";
+import { BiShow } from "react-icons/bi";
 
 const Inventory = () => {
   const [data, setData] = useState(null);
@@ -15,24 +20,29 @@ const Inventory = () => {
   const [error, setError] = useState(null);
   const [addModal, setAddModal] = useState(false);
   const [borrowModal, setBorrowModal] = useState(false);
+  const [consumeModal, setConsumeModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [item, setItem] = useState(null);
   const [search, setSearch] = useState("");
   const [item_id, setItemID] = useState(null);
   const [filter, setFilter] = useState("All");
-  // useEffect(() => {
-  //     // Step 1: Fetch the CSRF token
-  //     axios.get("http://localhost:8000/csrf-token")
-  //         .then(response => {
-  //             setCsrfToken(response.data); // Directly using response.data as the token
-  //         })
-  //         .catch(error => {
-  //             setError("Error fetching CSRF token");
-  //             console.error("Error fetching CSRF token:", error);
-  //         });
-  // }, []); // Empty array ensures this runs only once when the component mounts
+  const [visibleSetItems, setVisibleSetItems] = useState({});
+
+
+  const toggleSetItemsVisibility = (itemId) => {
+    setVisibleSetItems((prevState) => ({
+      ...prevState,
+      [itemId]: !prevState[itemId], // Toggle visibility for this item
+    }));
+  };
   const handleBorrow = (props) => {
     setItem(props);
     setBorrowModal(true);
+  };
+  const handleConsume = (props) => {
+    setItem(props);
+
+    setConsumeModal(true);
   };
 
   const handleDelete = (props) => {
@@ -53,6 +63,11 @@ const Inventory = () => {
     };
 
     fetchToken();
+  };
+
+  const handleEdit = (props) => {
+    setItem(props);
+    setEditModal(true);
   };
 
   const deleteItem = (csrfToken) => {
@@ -96,9 +111,9 @@ const Inventory = () => {
     <>
       <div className="container inventory">
         <div className="row container mt-5  mb-3 ">
-          <div className="col mb-2 inventory-search">
-            <div className="search-wrapper ">
-              <FaSearch />
+          <div className="col inventory-search">
+            <div className="search-wrapper">
+              <FaSearch className="my-auto" />
               <input
                 placeholder="Search items..."
                 type="text"
@@ -106,46 +121,34 @@ const Inventory = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <label for="filter">
+                <FaFilter className="my-2 mx-2"></FaFilter>{" "}
+              </label>
+              <select
+                name="filter"
+                id="filter"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="School Supplies">School Supplies</option>
+                <option value="ICT Supplies">ICT Supplies</option>
+                <option value="ICT Equipments">ICT Equipments</option>
+                <option value="Furniture & Appliances">
+                  Furniture & Appliances
+                </option>
+              </select>
             </div>
           </div>
 
           <div className="col-auto mb-2 ">
             <button
               type="button"
-              class="btn btn-dark  button-add onClick={() => setAddModal(true)}>"
+              class="btn btn-dark  button-add"
+              onClick={() => setAddModal(true)}
             >
               Add item
             </button>
-          </div>
-
-          <div className="col-auto drop-wrapper mb-2">
-            <div class="dropdown-center">
-              <button
-                class="btn btn-dark dropdown-toggle FaFilter"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                dropdown
-              </button>
-              <ul class="dropdown-menu mt-2">
-                <li>
-                  <a class="dropdown-item" href="#">
-                    All
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    Consumable
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    Non-Consumable
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
 
@@ -155,72 +158,131 @@ const Inventory = () => {
           show={borrowModal}
           onHide={() => setBorrowModal(false)}
         />
+        <ConsumeItem
+          item={item}
+          show={consumeModal}
+          onHide={() => setConsumeModal(false)}
+        />
+        <EditItem
+          item={item}
+          show={editModal}
+          onHide={() => setEditModal(false)}
+        />
 
-        <div className="container table-wrapper mt-3">
-          <Table className="table" striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Item</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>TBI Assigned</th>
-                <th>Person</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data && data.length > 0 ? (
-                data
-                  .filter((item) => {
-                    const matchesSearch =
-                      search.toLowerCase() === "" ||
-                      item.item.toLowerCase().includes(search);
-                    const matchesFilter =
-                      filter === "All" || item.category === filter;
-                    return matchesSearch && matchesFilter;
-                  })
-                  .map((item) => (
-                    <tr key={item.item_id}>
-                      <td>{item.item_id}</td>
-                      <td>{item.item}</td>
-                      <td>{item.category}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.tbi_assigned}</td>
-                      <td>{item.person}</td>
-                      <td>
-                        <div className="borrow">
-                          {item.category === "Consumable" ? (
-                            <Button className=" mx-3" variant="dark">
-                              Consume
-                            </Button>
-                          ) : (
-                            <Button
-                              className=" mx-3"
-                              variant="dark"
-                              onClick={() => handleBorrow(item)}
-                            >
-                              Borrow
-                            </Button>
-                          )}
-                          <Button
-                            className="mx-3"
-                            variant="danger"
-                            onClick={() => handleDelete(item.item_id)}
-                          >
-                            <MdDelete />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-              ) : (
+        <div className="container  mt-3">
+          <div>
+            <Table className="table" striped bordered hover>
+              <thead>
                 <tr>
-                  <td colSpan="8">No data available</td>
+                  <th>ID</th>
+                  <th>Property #</th>
+                  <th>Serial #</th>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Unit</th>
+                  <th>Set Items</th>
+                  <th>TBI Assigned</th>
+                  <th>Action</th>
                 </tr>
-              )}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {data && data.length > 0 ? (
+                  data
+                    .filter((item) => {
+                      const matchesSearch =
+                        search.toLowerCase() === "" ||
+                        item.item.toLowerCase().includes(search);
+                      const matchesFilter =
+                        filter === "All" || item.category === filter;
+                      return matchesSearch && matchesFilter;
+                    })
+                    .map((item) => (
+                      <tr key={item.item_id}>
+                        <td>{item.item_id}</td>
+                        <td>{item.property_num}</td>
+                        <td>{item.serial_num}</td>
+                        <td>{item.item}</td>
+                        <td>{item.description}</td>
+                        <td>{item.category}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.unit}</td>
+                        <td>
+                          <Button
+                            variant="info"
+                            onClick={() => toggleSetItemsVisibility(item.item_id)}
+                            className="mb-1 mx-auto"
+                          >
+                            {visibleSetItems[item.item_id] ? <BiHide /> : <BiShow />}
+                          </Button>
+                          {visibleSetItems[item.item_id] &&
+                            Array.isArray(item.set_items) &&
+                            item.set_items.length > 0 ? (
+                              item.set_items.map((setItem, index) => (
+                                <div key={index}>
+                                  <div>Property: {setItem.property_num}</div>
+                                  <div>Serial: {setItem.serial_num}</div>
+                                  <div>Description: {setItem.description}</div>
+                                  <br></br>
+                                </div>
+                              ))
+                            ) : (
+                              <div></div>
+                            )}
+                        </td>
+
+                        <td>{item.tbi_assigned}</td>
+
+                        <td className="action">
+                          <div className="row ">
+                            <div className="col-4">
+                              <Button
+                                type="button"
+                                className="mx-auto action-button"
+                                variant="dark"
+                                onClick={() =>
+                                  item.category === "School Supplies" ||  item.category === "ICT Supplies"
+                                    ? handleConsume(item)
+                                    : handleBorrow(item)
+                                  
+                                }
+                              >
+                                {item.category === "School Supplies" || item.category === "ICT Supplies"
+                                  ? "Consume"
+                                  : "Borrow"}
+                              </Button>
+                            </div>
+                            <div className="col-1  action-div edit">
+                              <Button
+                                className="del "
+                                variant="dark"
+                                onClick={() => handleEdit(item.item_id)}
+                              >
+                                <FiEdit />
+                              </Button>
+                            </div>
+                            <div className="col-1  action-div">
+                              <Button
+                                className="del "
+                                variant="danger"
+                                onClick={() => handleDelete(item.item_id)}
+                              >
+                                <MdDelete />
+                              </Button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td colSpan="8">No data available</td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
         </div>
       </div>
     </>

@@ -3,6 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import Table from "react-bootstrap/Table";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaFilter } from "react-icons/fa";
 
 const Logs = () => {
   const [data, setData] = useState(null);
@@ -11,6 +12,7 @@ const Logs = () => {
   const [search, setSearch] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showSearch, setShowSearch] = useState(false);
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +37,6 @@ const Logs = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
   const formatDateTime = (timestamp) => {
     if (!timestamp) return "";
     const [date, time] = timestamp.split("T");
@@ -54,24 +55,39 @@ const Logs = () => {
   return (
     <>
       <div className="container inventory">
-       
-            
-              <div className="search-logs mt-5 mx-3 mb-3">
-                <FaSearch />
-                <input
-                  placeholder="Search items..."
-                  type="text"
-                  name="search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-             
+        <div className="row container mt-5  mb-3 ">
+          <div className="col inventory-search">
+            <div className="search-wrapper">
+              <FaSearch className="my-auto" />
+              <input
+                placeholder="Search items..."
+                type="text"
+                name="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <label for="filter">
+                <FaFilter className="my-2 mx-2"></FaFilter>{" "}
+              </label>
+              <select
+                name="filter"
+                id="filter"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Consume">Consume</option>
+                <option value="Borrow">Borrow</option>
+                <option value="Add">Add</option>
+              </select>
+            </div>
+          </div>
         </div>
-        
+
         <div className="container table-wrapper mt-3">
           <Table className="table" striped bordered hover>
-            <thead> 
-            <tr>
+            <thead>
+              <tr>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Reference ID</th>
@@ -84,12 +100,20 @@ const Logs = () => {
               </tr>
             </thead>
             <tbody>
-            {data && data.length > 0 ? (
+              {data && data.length > 0 ? (
                 data
                   .filter((item) => {
-                    return search.toLowerCase() === ""
-                      ? item
-                      : item.item.toLowerCase().includes(search);
+                    const matchesSearch =
+                      search.toLowerCase() === ""
+                        ? true
+                        : item.item
+                            .toLowerCase()
+                            .includes(search.toLowerCase());
+
+                    const matchesFilter =
+                      filter === "All" || item.status === filter;
+
+                    return matchesSearch && matchesFilter;
                   })
                   .map((item) => {
                     const { date, time } = formatDateTime(item.created_at);

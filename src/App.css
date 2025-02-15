@@ -96,7 +96,7 @@ input:focus{
 .logout-btn {
  float: right;
  width: 100px;
- margin-left: 700px;
+ margin-right: -110%;
 }
 
 
@@ -221,3 +221,48 @@ input:focus{
   }
 }
 
+.input-group-text {
+  background-color: #fff;
+  border-right: 0;
+  border-color: none;
+}
+
+.form-control {
+  border-left: 0;
+}
+
+.inventory{
+  background-color: none;
+}
+
+.container{
+  background-color: none;
+}
+
+body{
+  background-color: none;
+}
+
+
+.del{
+  height: 39px;
+  float: right;
+}
+
+.action-div{
+  margin-left: auto;
+
+}
+
+.edit{
+  margin-right: -45px;
+}
+
+.action{
+  width: 250px;
+  
+}
+
+.action-button{
+  width: 100px;
+}

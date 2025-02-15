@@ -1,8 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import Navigatu from "../assets/navigatu.jpg";
-import Tara from "../assets/tara.jpg";
+import Navigatu from "../assets/logo.png";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 
@@ -18,70 +17,60 @@ const Navigation = () => {
   };
 
   return (
-    <>
-      <div>
-        <Navbar expand="lg" className="bg-body-tertiary">
-          <Container>
-            <div className="row">
-              <div className="col">
-                <Navbar.Brand href="/track">
-                  <img
-                    src={Navigatu}
-                    width="60"
-                    height="60"
-                    className="d-inline-block align-top"
-                  />
-                </Navbar.Brand>
-              </div>
-              {/* <div className="col">
-                
-              </div> */}
-              <div className="col track">
-                <Navbar.Toggle
-                  aria-controls="basic-navbar-nav"
-                  className="toggle"
-                />
-                <Navbar.Collapse id="basic-navbar-nav">
-                  <Nav className="me-auto ">
-                    {localStorage.getItem("currentPage") === "Tracking" && (
-                      <Nav.Link>Tracking Dashboard</Nav.Link>
-                    )}
-                    {localStorage.getItem("currentPage") === "Inventory" && (
-                      <Nav.Link>Inventory Dashboard</Nav.Link>
-                    )}
-                    {localStorage.getItem("currentPage") === "Logs" && (
-                      <Nav.Link>Logs Dashboard</Nav.Link>
-                    )}
-                    <Nav.Link
-                      href="/track"
-                      onClick={() => pageHandler("Tracking")}
-                    >
-                      Tracking
-                    </Nav.Link>
-                    <Nav.Link
-                      href="/inventory"
-                      onClick={() => pageHandler("Inventory")}
-                    >
-                      Inventory
-                    </Nav.Link>
-                    <Nav.Link href="/logs" onClick={() => pageHandler("Logs")}>
-                      Logs
-                    </Nav.Link>
-                  </Nav>
+    <Navbar expand="lg" className="bg-white py-2 container">
+      <Container fluid className="" >
+        {/* Logo Section */}
+        <Navbar.Brand href="/track" className="d-flex align-items-center">
+          <img
+            src={Navigatu}
+            width="50"
+            height="50"
+            className="d-inline-block align-top"
+            alt="Logo"
+          />
+        </Navbar.Brand>
 
-                  <button
-                    type="button"
-                    class="btn btn-danger logout-btn   onClick={() => logout()}>"
-                  >
-                    Log out
-                  </button>
-                </Navbar.Collapse>
-              </div>
+        {/* Navbar Toggle for Mobile */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="toggle" />
+
+        <Navbar.Collapse id="basic-navbar-nav">
+          <div className="d-flex flex-column flex-lg-row w-100 justify-content-between align-items-center">
+            {/* Dashboard Section */}
+            <div className="text-center my-2 my-lg-0">
+              {localStorage.getItem("currentPage") === "Tracking" && (
+                <Nav.Link disabled>Tracking Dashboard</Nav.Link>
+              )}
+              {localStorage.getItem("currentPage") === "Inventory" && (
+                <Nav.Link disabled>Inventory Dashboard</Nav.Link>
+              )}
+              {localStorage.getItem("currentPage") === "Logs" && (
+                <Nav.Link disabled>Logs Dashboard</Nav.Link>
+              )}
             </div>
-          </Container>
-        </Navbar>
-      </div>
-    </>
+
+            {/* Navigation Links */}
+            <Nav className="flex-grow-1 justify-content-center">
+              <Nav.Link href="/track" onClick={() => pageHandler("Tracking")}>
+                Tracking
+              </Nav.Link>
+              <Nav.Link href="/inventory" onClick={() => pageHandler("Inventory")}>
+                Inventory
+              </Nav.Link>
+              <Nav.Link href="/logs" onClick={() => pageHandler("Logs")}>
+                Logs
+              </Nav.Link>
+            </Nav>
+
+            {/* Logout Button */}
+            <div className="text-center my-2 my-lg-0">
+              <Button variant="danger" className="px-4" onClick={logout}>
+                Log out
+              </Button>
+            </div>
+          </div>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 

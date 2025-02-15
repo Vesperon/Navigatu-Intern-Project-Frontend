@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";
 import axios from "axios";
-import Logo from '../assets/navigatu.jpg';
+import Logo from '../assets/logo.png';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -71,7 +71,7 @@ const Login = () => {
     >
       <Card style={{ width: "100%", maxWidth: "400px" }} className="login-card">
         <Card.Body>
-          <img src={Logo} style={{ width: "350px",}} className="my-3"></img>
+          <img src={Logo} style={{ width: "200px",}} className="my-3 mx-auto"></img>
           <Card.Title className="text-center mb-4">Login</Card.Title>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3 email " controlId="formBasicEmail">
