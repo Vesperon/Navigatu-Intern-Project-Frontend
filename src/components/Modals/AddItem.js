@@ -2,7 +2,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import axios from "axios";
 const AddItem = (props) => {
   const [item, setItem] = useState("");
@@ -18,9 +18,26 @@ const AddItem = (props) => {
   const [serial_num, setSerial_num] = useState("");
   const [description, setDescription] = useState("");
   const [setItems, setSetItems] = useState([]);
+  const [submitSuccess, setSubmitSuccess] = useState(true);
+
+  useEffect(() => {
+    if (unit === "SET") {
+      const updatedSetItems = Array.from({ length: quantity-1 }, (_, index) => ({
+        property_num: setItems[index]?.property_num || "",
+        serial_num: setItems[index]?.serial_num || "",
+        description: setItems[index]?.description || "",
+      }));
+      setSetItems(updatedSetItems);
+    } else {
+      setSetItems([]); // Reset if not SET
+    }
+  }, [quantity, unit]);
 
   const addSetItem = () => {
-    setSetItems([...setItems, { property_num: "", serial_num: "",description: "" }]);
+    setSetItems([
+      ...setItems,
+      { property_num: "", serial_num: "", description: "" },
+    ]);
   };
 
   // Handle change in dynamic inputs
@@ -28,7 +45,6 @@ const AddItem = (props) => {
     const updatedSetItems = [...setItems];
     updatedSetItems[index][field] = value;
     setSetItems(updatedSetItems);
-    console.log(updatedSetItems);
   };
 
   const handleSubmit = (e) => {
@@ -61,8 +77,16 @@ const AddItem = (props) => {
       tbi_assigned,
       unit,
       description,
-      property_num,
-      serial_num,
+      property_num: ["ICT Equipments", "Furniture & Appliances"].includes(
+        category
+      )
+        ? property_num
+        : null,
+      serial_num: ["ICT Equipments", "Furniture & Appliances"].includes(
+        category
+      )
+        ? serial_num
+        : null,
       set_items: unit === "SET" ? setItems : [],
     };
     console.log(formData);
@@ -82,109 +106,214 @@ const AddItem = (props) => {
       .catch((error) => {
         console.error("Error adding item:", error);
         setError("Failed to add item");
+        setSubmitSuccess(false);
       })
       .finally(() => {
         setLoading(false); // Stop loading indicator
-        // window.location.reload();
+        if (submitSuccess === true) {
+          window.location.reload();
+        }
       });
   };
 
   return (
-    <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+    <Modal {...props} size="lg" centered>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">Add item</Modal.Title>
+          <Modal.Title>Add item</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FloatingLabel controlId="floatingInput" label="Item" className="mb-3">
-            <Form.Control type="text" placeholder="Item" value={item} onChange={(e) => setItem(e.target.value)} />
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Item"
+            className="mb-3"
+          >
+            <Form.Control
+              type="text"
+              value={item}
+              onChange={(e) => setItem(e.target.value)}
+              required
+            />
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingInput" label="Description" className="mb-3">
-            <Form.Control type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Description"
+            className="mb-3"
+          >
+            <Form.Control
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            {(category === "ICT Equipments" ||
+              category === "Furniture & Appliances") && (
+              <>
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="Property #"
+                  className="my-3"
+                >
+                  <Form.Control
+                    type="text"
+                    value={property_num}
+                    onChange={(e) => setProperty_num(e.target.value)}
+                  />
+                </FloatingLabel>
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="Serial #"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    type="text"
+                    value={serial_num}
+                    onChange={(e) => setSerial_num(e.target.value)}
+                  />
+                </FloatingLabel>
+              </>
+            )}
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Quantity"
+              className="mb-3"
+            >
+              <Form.Control
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                required
+              />
+            </FloatingLabel>
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingInput" label="Property #" className="mb-3">
-            <Form.Control type="text" placeholder="Property #" value={property_num} onChange={(e) => setProperty_num(e.target.value)} />
-          </FloatingLabel>
-
-          <FloatingLabel controlId="floatingInput" label="Serial #" className="mb-3">
-            <Form.Control type="text" placeholder="Serial #" value={serial_num} onChange={(e) => setSerial_num(e.target.value)} />
-          </FloatingLabel>
-
-          <FloatingLabel controlId="floatingInput" label="Quantity" className="mb-3">
-            <Form.Control type="number" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-          </FloatingLabel>
-
-          <FloatingLabel controlId="floatingSelect" label="Category" className="mb-3">
-            <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="" disabled>=== Select Category ===</option>
+          <FloatingLabel
+            controlId="floatingSelect"
+            label="Category"
+            className="mb-3"
+          >
+            <Form.Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                === Select Category ===
+              </option>
               <option value="School Supplies">School Supplies</option>
               <option value="ICT Supplies">ICT Supplies</option>
               <option value="ICT Equipments">ICT Equipments</option>
-              <option value="Furniture & Appliances">Furniture & Appliances</option>
+              <option value="Furniture & Appliances">
+                Furniture & Appliances
+              </option>
             </Form.Select>
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingSelect" label="TBI" className="mb-3">
-            <Form.Select value={tbi_assigned} onChange={(e) => setTbi_assigned(e.target.value)}>
-              <option value="" disabled>=== Select TBI ===</option>
+          <FloatingLabel
+            controlId="floatingSelect"
+            label="TBI"
+            className="mb-3"
+          >
+            <Form.Select
+              value={tbi_assigned}
+              onChange={(e) => setTbi_assigned(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                === Select TBI ===
+              </option>
               <option value="Navigatu">Navigatu</option>
               <option value="TARA">TARA</option>
             </Form.Select>
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingSelect" label="Unit" className="mb-3">
-            <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
-              <option value="" disabled>=== Select Unit ===</option>
+          <FloatingLabel
+            controlId="floatingSelect"
+            label="Unit"
+            className="mb-3"
+          >
+            <Form.Select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                === Select Unit ===
+              </option>
               <option value="PCS">PCS</option>
               <option value="SET">SET</option>
             </Form.Select>
           </FloatingLabel>
 
-          {/* Show extra inputs if "SET" is selected */}
-          {unit === "SET" && (
+          {unit === "SET" && setItems.length > 0 && (
             <>
               <h5 className="my-2">Set Items</h5>
               {setItems.map((setItem, index) => (
                 <div key={index} className="mb-3">
                   <h5 className="my-3">Item {index + 1}</h5>
-                  <FloatingLabel controlId={`property_${index}`} label="Property #" className="mb-2">
+                  <FloatingLabel
+                    controlId={`property_${index}`}
+                    label="Property #"
+                    className="mb-2"
+                  >
                     <Form.Control
                       type="text"
-                      placeholder="Property #"
                       value={setItem.property_num}
-                      onChange={(e) => handleSetItemChange(index, "property_num", e.target.value)}
+                      onChange={(e) =>
+                        handleSetItemChange(
+                          index,
+                          "property_num",
+                          e.target.value
+                        )
+                      }
+                      required
                     />
                   </FloatingLabel>
-                  <FloatingLabel controlId={`serial_${index}`} label="Serial #" className="mb-2">
+                  <FloatingLabel
+                    controlId={`serial_${index}`}
+                    label="Serial #"
+                    className="mb-2"
+                  >
                     <Form.Control
                       type="text"
-                      placeholder="Serial #"
                       value={setItem.serial_num}
-                      onChange={(e) => handleSetItemChange(index, "serial_num", e.target.value)}
+                      onChange={(e) =>
+                        handleSetItemChange(index, "serial_num", e.target.value)
+                      }
+                      required
                     />
                   </FloatingLabel>
-                  <FloatingLabel controlId={`serial_${index}`} label="Description" className="mb-2">
+                  <FloatingLabel
+                    controlId={`description_${index}`}
+                    label="Description"
+                    className="mb-2"
+                  >
                     <Form.Control
                       type="text"
-                      placeholder="Description"
                       value={setItem.description}
-                      onChange={(e) => handleSetItemChange(index, "description", e.target.value)}
+                      onChange={(e) =>
+                        handleSetItemChange(
+                          index,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      required
                     />
                   </FloatingLabel>
                 </div>
               ))}
-              <Button variant="outline-primary" onClick={addSetItem} className="mb-3">
-                + Add Another Set Item
-              </Button>
             </>
           )}
 
           {error && <p className="text-danger">{error}</p>}
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Confirm"}</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Submitting..." : "Confirm"}
+          </Button>
           <Button onClick={props.onHide}>Cancel</Button>
         </Modal.Footer>
       </Form>

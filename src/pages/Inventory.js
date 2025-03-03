@@ -2,6 +2,7 @@ import "../App.css";
 import { FaSearch } from "react-icons/fa";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/esm/Button";
+import { Navbar, Nav, Container } from "react-bootstrap";
 import { MdDelete } from "react-icons/md";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -25,9 +26,20 @@ const Inventory = () => {
   const [item, setItem] = useState(null);
   const [search, setSearch] = useState("");
   const [item_id, setItemID] = useState(null);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState([
+    "ICT Equipments",
+    "Furniture & Appliances",
+  ]);
   const [visibleSetItems, setVisibleSetItems] = useState({});
+  const [activeTab, setActiveTab] = useState("Borrow");
 
+  const handleNavClick = (filterType) => {
+    if (filterType === "Borrow") {
+      setFilter(["ICT Equipments", "Furniture & Appliances"]);
+    } else if (filterType === "Consume") {
+      setFilter(["School Supplies", "ICT Supplies"]);
+    }
+  };
 
   const toggleSetItemsVisibility = (itemId) => {
     setVisibleSetItems((prevState) => ({
@@ -105,7 +117,7 @@ const Inventory = () => {
       }
     };
     fetchData();
-  }); // Added csrfToken as a dependency to the useEffect
+  },[]); // Added csrfToken as a dependency to the useEffect
 
   return (
     <>
@@ -121,23 +133,6 @@ const Inventory = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <label for="filter">
-                <FaFilter className="my-2 mx-2"></FaFilter>{" "}
-              </label>
-              <select
-                name="filter"
-                id="filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="All">All</option>
-                <option value="School Supplies">School Supplies</option>
-                <option value="ICT Supplies">ICT Supplies</option>
-                <option value="ICT Equipments">ICT Equipments</option>
-                <option value="Furniture & Appliances">
-                  Furniture & Appliances
-                </option>
-              </select>
             </div>
           </div>
 
@@ -169,20 +164,53 @@ const Inventory = () => {
           onHide={() => setEditModal(false)}
         />
 
+        <Navbar expand="lg" className="bg-white py-2 container">
+          <Container fluid className="">
+            <div className="d-flex flex-column flex-lg-row w-100 justify-content-between align-items-center">
+              <Nav className="flex-grow-1 justify-content-center">
+                <Nav.Link
+                  className="mx-60"
+                  onClick={() => handleNavClick("Borrow")}
+                >
+                  Borrow
+                </Nav.Link>
+                <Nav.Link
+                  className="mx-60"
+                  onClick={() => handleNavClick("Consume")}
+                >
+                  Consume
+                </Nav.Link>
+              </Nav>
+            </div>
+          </Container>
+        </Navbar>
+
         <div className="container  mt-3">
           <div>
             <Table className="table" striped bordered hover>
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Property #</th>
-                  <th>Serial #</th>
+                  {/* Conditionally render Property # and Serial # */}
+                  {!(
+                    filter.includes("School Supplies") ||
+                    filter.includes("ICT Supplies")
+                  ) && (
+                    <>
+                      <th>Property #</th>
+                      <th>Serial #</th>
+                    </>
+                  )}
                   <th>Item</th>
                   <th>Description</th>
                   <th>Category</th>
                   <th>Quantity</th>
                   <th>Unit</th>
-                  <th>Set Items</th>
+                  {/* Conditionally render Set Items */}
+                  {!(
+                    filter.includes("School Supplies") ||
+                    filter.includes("ICT Supplies")
+                  ) && <th>Set Items</th>}
                   <th>TBI Assigned</th>
                   <th>Action</th>
                 </tr>
@@ -195,28 +223,49 @@ const Inventory = () => {
                         search.toLowerCase() === "" ||
                         item.item.toLowerCase().includes(search);
                       const matchesFilter =
-                        filter === "All" || item.category === filter;
+                        filter === "All" ||
+                        (Array.isArray(filter) &&
+                          filter.includes(item.category));
                       return matchesSearch && matchesFilter;
                     })
                     .map((item) => (
                       <tr key={item.item_id}>
                         <td>{item.item_id}</td>
-                        <td>{item.property_num}</td>
-                        <td>{item.serial_num}</td>
+                        {/* Conditionally render Property # and Serial # */}
+                        {!(
+                          item.category === "School Supplies" ||
+                          item.category === "ICT Supplies"
+                        ) && (
+                          <>
+                            <td>{item.property_num}</td>
+                            <td>{item.serial_num}</td>
+                          </>
+                        )}
                         <td>{item.item}</td>
                         <td>{item.description}</td>
                         <td>{item.category}</td>
                         <td>{item.quantity}</td>
                         <td>{item.unit}</td>
-                        <td>
-                          <Button
-                            variant="info"
-                            onClick={() => toggleSetItemsVisibility(item.item_id)}
-                            className="mb-1 mx-auto"
-                          >
-                            {visibleSetItems[item.item_id] ? <BiHide /> : <BiShow />}
-                          </Button>
-                          {visibleSetItems[item.item_id] &&
+                        {/* Conditionally render Set Items */}
+                        {!(
+                          filter.includes("School Supplies") ||
+                          filter.includes("ICT Supplies")
+                        ) && (
+                          <td>
+                            <Button
+                              variant="info"
+                              onClick={() =>
+                                toggleSetItemsVisibility(item.item_id)
+                              }
+                              className="mb-1 mx-auto"
+                            >
+                              {visibleSetItems[item.item_id] ? (
+                                <BiHide />
+                              ) : (
+                                <BiShow />
+                              )}
+                            </Button>
+                            {visibleSetItems[item.item_id] &&
                             Array.isArray(item.set_items) &&
                             item.set_items.length > 0 ? (
                               item.set_items.map((setItem, index) => (
@@ -230,10 +279,9 @@ const Inventory = () => {
                             ) : (
                               <div></div>
                             )}
-                        </td>
-
+                          </td>
+                        )}
                         <td>{item.tbi_assigned}</td>
-
                         <td className="action">
                           <div className="row ">
                             <div className="col-4">
@@ -242,13 +290,14 @@ const Inventory = () => {
                                 className="mx-auto action-button"
                                 variant="dark"
                                 onClick={() =>
-                                  item.category === "School Supplies" ||  item.category === "ICT Supplies"
+                                  item.category === "School Supplies" ||
+                                  item.category === "ICT Supplies"
                                     ? handleConsume(item)
                                     : handleBorrow(item)
-                                  
                                 }
                               >
-                                {item.category === "School Supplies" || item.category === "ICT Supplies"
+                                {item.category === "School Supplies" ||
+                                item.category === "ICT Supplies"
                                   ? "Consume"
                                   : "Borrow"}
                               </Button>
