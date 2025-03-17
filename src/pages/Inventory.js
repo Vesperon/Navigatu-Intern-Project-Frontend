@@ -306,7 +306,7 @@ const Inventory = () => {
                               <Button
                                 className="del "
                                 variant="dark"
-                                onClick={() => handleEdit(item.item_id)}
+                                onClick={() => handleEdit(item)}
                               >
                                 <FiEdit />
                               </Button>

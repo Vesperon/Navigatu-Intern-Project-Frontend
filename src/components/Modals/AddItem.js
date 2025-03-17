@@ -9,29 +9,14 @@ const AddItem = (props) => {
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [tbi_assigned, setTbi_assigned] = useState("");
-  const [person, setPerson] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [unit, setUnit] = useState("");
-  const [set, setSet] = useState(1);
   const [property_num, setProperty_num] = useState("");
   const [serial_num, setSerial_num] = useState("");
   const [description, setDescription] = useState("");
   const [setItems, setSetItems] = useState([]);
   const [submitSuccess, setSubmitSuccess] = useState(true);
-
-  useEffect(() => {
-    if (unit === "SET") {
-      const updatedSetItems = Array.from({ length: quantity-1 }, (_, index) => ({
-        property_num: setItems[index]?.property_num || "",
-        serial_num: setItems[index]?.serial_num || "",
-        description: setItems[index]?.description || "",
-      }));
-      setSetItems(updatedSetItems);
-    } else {
-      setSetItems([]); // Reset if not SET
-    }
-  }, [quantity, unit]);
 
   const addSetItem = () => {
     setSetItems([
@@ -40,10 +25,14 @@ const AddItem = (props) => {
     ]);
   };
 
-  // Handle change in dynamic inputs
   const handleSetItemChange = (index, field, value) => {
     const updatedSetItems = [...setItems];
     updatedSetItems[index][field] = value;
+    setSetItems(updatedSetItems);
+  };
+
+  const handleDeleteSetItem = (index) => {
+    const updatedSetItems = setItems.filter((_, i) => i !== index);
     setSetItems(updatedSetItems);
   };
 
@@ -126,7 +115,7 @@ const AddItem = (props) => {
           <FloatingLabel
             controlId="floatingInput"
             label="Item"
-            className="mb-3"
+            className="mb-2"
           >
             <Form.Control
               type="text"
@@ -134,7 +123,32 @@ const AddItem = (props) => {
               onChange={(e) => setItem(e.target.value)}
               required
             />
-          </FloatingLabel>
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Property #"
+              className="my-2"
+            >
+              <Form.Control
+                type="text"
+                value={property_num}
+                onChange={(e) => setProperty_num(e.target.value)}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Serial #"
+              className="mb-2"
+            >
+              <Form.Control
+                type="text"
+                value={serial_num}
+                onChange={(e) => setSerial_num(e.target.value)}
+                required
+              />
+            </FloatingLabel>
+          
 
           <FloatingLabel
             controlId="floatingInput"
@@ -147,37 +161,11 @@ const AddItem = (props) => {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
-            {(category === "ICT Equipments" ||
-              category === "Furniture & Appliances") && (
-              <>
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="Property #"
-                  className="my-3"
-                >
-                  <Form.Control
-                    type="text"
-                    value={property_num}
-                    onChange={(e) => setProperty_num(e.target.value)}
-                  />
-                </FloatingLabel>
-                <FloatingLabel
-                  controlId="floatingInput"
-                  label="Serial #"
-                  className="mb-3"
-                >
-                  <Form.Control
-                    type="text"
-                    value={serial_num}
-                    onChange={(e) => setSerial_num(e.target.value)}
-                  />
-                </FloatingLabel>
-              </>
-            )}
+
             <FloatingLabel
               controlId="floatingInput"
               label="Quantity"
-              className="mb-3"
+              className="my-3"
             >
               <Form.Control
                 type="number"
@@ -247,65 +235,53 @@ const AddItem = (props) => {
             </Form.Select>
           </FloatingLabel>
 
-          {unit === "SET" && setItems.length > 0 && (
+          {unit === "SET" && ["ICT Equipments", "Furniture & Appliances"].includes(category) && setItems.length > 0 && (
             <>
               <h5 className="my-2">Set Items</h5>
               {setItems.map((setItem, index) => (
                 <div key={index} className="mb-3">
                   <h5 className="my-3">Item {index + 1}</h5>
-                  <FloatingLabel
-                    controlId={`property_${index}`}
-                    label="Property #"
-                    className="mb-2"
-                  >
+                  <FloatingLabel controlId={`property_${index}`} label="Property #" className="mb-2">
                     <Form.Control
                       type="text"
                       value={setItem.property_num}
-                      onChange={(e) =>
-                        handleSetItemChange(
-                          index,
-                          "property_num",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => handleSetItemChange(index, "property_num", e.target.value)}
                       required
                     />
                   </FloatingLabel>
-                  <FloatingLabel
-                    controlId={`serial_${index}`}
-                    label="Serial #"
-                    className="mb-2"
-                  >
+                  <FloatingLabel controlId={`serial_${index}`} label="Serial #" className="mb-2">
                     <Form.Control
                       type="text"
                       value={setItem.serial_num}
-                      onChange={(e) =>
-                        handleSetItemChange(index, "serial_num", e.target.value)
-                      }
+                      onChange={(e) => handleSetItemChange(index, "serial_num", e.target.value)}
                       required
                     />
                   </FloatingLabel>
-                  <FloatingLabel
-                    controlId={`description_${index}`}
-                    label="Description"
-                    className="mb-2"
-                  >
+                  <FloatingLabel controlId={`description_${index}`} label="Description" className="mb-2">
                     <Form.Control
                       type="text"
                       value={setItem.description}
-                      onChange={(e) =>
-                        handleSetItemChange(
-                          index,
-                          "description",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => handleSetItemChange(index, "description", e.target.value)}
                       required
                     />
                   </FloatingLabel>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => handleDeleteSetItem(index)}
+                    className="mt-2"
+                  >
+                    Delete Set
+                  </Button>
                 </div>
+                
               ))}
             </>
+          )}
+
+          {unit === "SET" && ["ICT Equipments", "Furniture & Appliances"].includes(category) && (
+            <Button variant="outline-primary" onClick={addSetItem} className="mb-3">
+              + Add Set Item
+            </Button>
           )}
 
           {error && <p className="text-danger">{error}</p>}
